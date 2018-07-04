@@ -6,4 +6,5 @@
   * in class
     1. 學會架設我的repository 
     2. 不小心拉了我也不知道是什麼的檔案
+    3. 學會刪除檔案
   * at home

@@ -2,8 +2,8 @@
 
 * in class
 
-
 [HW1](file:///Users/stephanie/hw1.html)
+  
   學習使用R studio
 
   匯出一個網頁

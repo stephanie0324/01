@@ -1,8 +1,4 @@
 
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
 # hw1
 
 2018年７月１日
@@ -13,7 +9,7 @@ knitr::opts_chunk$set(echo = TRUE)
  
 #### 四則運算
 
-每一個框框要先打上三個頓號一個誇湖包括r再加上三個頓號做結尾即可
+每一個框框要先打上三個頓號一個括弧包括r再加上三個頓號做結尾即可
 
 先加減後乘除
 

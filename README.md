@@ -4,5 +4,6 @@
   希望這個暑假可以學好程設。
 ## week 1
 * in class
-
+1 學會架設我的repository 
+2 不小心拉了我也不知道是什麼的檔案
 * at home

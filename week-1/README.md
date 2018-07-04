@@ -2,7 +2,7 @@
 
 * in class
 
-[HW1] (file:///Users/stephanie/hw1.html)
+  [ HW1 ](file:///Users/stephanie/hw1.html)
   
   學習使用R studio
 

@@ -3,4 +3,6 @@
   我是台大經濟一 江雨柔 第一次接觸程式設計。
   希望這個暑假可以學好程設。
 ## week 1
+*in class
 1(Github&Rmarkdown)
+*at home

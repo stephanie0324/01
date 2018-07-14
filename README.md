@@ -9,9 +9,9 @@
 
 # week-1
 
-[HW1](https://stephanie0324.github.io/summer-class/week-1/hw1)
+[HW1](https://stephanie0324.github.io/cs-summer-school/week-1/hw1.html)
 
-* in class
+* in classhttps://stephanie0324.github.io/summer-class/week-1/hw1
   
   學習使用R studio
 

@@ -1,0 +1,52 @@
+#hw2
+
+2018年7月14日
+
+
+```{r}
+library(ggplot2)
+beaver1
+```
+
+#單變數：類別型
+
+```{r}
+ggplot(data = beaver1,aes(x=temp))+
+geom_bar(fill = "lightblue", colour = "black")
+```
+
+#單變數：連續型
+```{r}
+ggplot(data=beaver1,aes(x=temp))+
+  geom_histogram(binwidth = 5)
+```
+
+#雙變數：連續 vs 連續
+
+```{r}
+ggplot(data=beaver1,aes(x=day, y=temp))+
+  geom_point()
+```
+
+#雙變數：離散 vs 連續
+
+```{r}
+ggplot(data=beaver1, aes(x=time, y=temp)) +
+geom_boxplot()
+```
+
+#多變量：水獺體溫與活動量的關係
+
+```{r}
+library("ggplot2")
+library("scales")
+library("GGally")
+library("memisc")
+
+set.seed(20022012)
+beaver_samp <- beaver1[sample(1:length(beaver1$temp), 100), ]
+ggpairs(beaver_samp,lower= list(continuous = wrap("points", shape = I('.'))),
+        upper = list(combo = wrap("box", outlier.shape = I('.'))))
+
+
+

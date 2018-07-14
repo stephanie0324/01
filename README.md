@@ -33,6 +33,7 @@
     
 # week-2 
 
+[hw2-1](file:///Users/stephanie/Documents/GitHub/summer-class/week-2/hw2part-1.html)
 
 * in class
  

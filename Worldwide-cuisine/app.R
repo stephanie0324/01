@@ -8,7 +8,14 @@
 #
 
 library(shiny)
-
+shinyUI(navbarPage("CUISINE",
+                   tabPanel("前言"),
+                   navbarMenu("選單",tabPanel("Option2-1"),
+                                     tabPanel("Option2-2"),
+                                     tabPanel("Option2-3"))
+                    )
+                    
+         )
 # Define UI for application that draws a histogram
 ui <- fluidPage(
    
@@ -30,7 +37,7 @@ ui <- fluidPage(
          plotOutput("distPlot")
       )
    )
-)
+))
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {

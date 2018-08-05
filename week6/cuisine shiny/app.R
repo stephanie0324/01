@@ -15,18 +15,18 @@ library(shinythemes)
 # Define UI for application that draws a histogram
 cuisine<<-list("italian","southern_us","mexican","chinese","french")
 ui <- navbarPage(theme=shinytheme("cosmo"),"Worldwide Cuisine",tabPanel("前言"),
-                 navbarMenu("世界",tabPanel("world",h1(fluidPage()))),
-                 navbarMenu("異國料理",tabPanel("長條圖",h1(fluidPage(titlePanel("Barplot"),
-                                                                       sidebarLayout(sidebarPanel(selectInput("cuisine", "選擇國家",choices=cuisine),
-                                                                                     hr()),
-                                                                                     mainPanel( plotOutput("cbarplot")))))),
-                                       tabPanel("文字雲",h1(fluidPage(titlePanel("Word Cloud"),
-                                                                       sidebarLayout(sidebarPanel(selectInput("cuisine", "選擇國家", choices = cuisine),
-                                                                                     actionButton("update","Change"),
-                                                                                     hr(),
-                                                                                     sliderInput("freq","Minimum Frequency:",min = 1,  max = 50, value = 15),
-                                                                                     sliderInput("max","Maximum Number of Words:",min = 1,  max = 300,  value = 100)),
-                                                                                     mainPanel(plotOutput("wordcloudcuisine")))))))
+                 navbarMenu("世界",    tabPanel("world", h1(fluidPage()))),
+                 
+                 navbarMenu("異國料理",
+                             tabPanel("長條圖",h1(fluidPage(titlePanel("Barplot"),
+                             sidebarLayout(sidebarPanel(selectInput("cuisine", "選擇國家",choices=cuisine),
+                             hr()),
+                             mainPanel( plotOutput("cbarplot")))))),
+                                       
+                             tabPanel("文字雲",h1(fluidPage(titlePanel("Word Cloud"),
+                             sidebarLayout(sidebarPanel(selectInput("cuisineName", "選擇國家", choices = cuisine),
+                             hr()),
+                             mainPanel(plotOutput("wordcloudcuisine")))))))
                                                                     
 
                  )
@@ -118,13 +118,14 @@ wcuisine= function(train,cuisine)
       unnest_tokens(word, text) %>%
       filter(!word %in% stop_words$word) %>%
       filter(!word %in% most_common_words$word) %>%
-      filter(cuisine == input$cuisine) %>%
+      filter(cuisine == input$cuisineName) %>%
       count(word,sort = TRUE) %>%
       ungroup()  %>%
       head(30)%>% 
+    
   with(wordcloud(word, n, max.words = 50,colors=brewer.pal(8, "Dark2")))
 }
-output$wordcloudcuisine<-renderPlot(wcuisine(train,input$cuisine))
+output$wordcloudcuisine<-renderPlot(wcuisine(train,input$cuisineName))
 }
 
 # Run the application 

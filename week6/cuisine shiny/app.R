@@ -10,13 +10,14 @@
 library(shiny)
 library(wordcloud)
 library(RColorBrewer)
+library(ggplot2)
 # Define UI for application that draws a histogram
-cuisine<<-list("italian","southern-us","mexican","chinese","french")
+cuisine<<-list("italian","southern_us","mexican","chinese","french")
 ui <- navbarPage("Worldwide Cuisine",tabPanel("前言"),
                  navbarMenu("世界",tabPanel("world",h1(fluidPage()))),
                  navbarMenu("異國料理",tabPanel("長條圖",h1(fluidPage(
                                                                        titlePanel("Barplot"),
-                                                                       sidebarLayout(sidebarPanel(selectInput("cuisine", "選擇國家",choices=colnames(cuisine)),
+                                                                       sidebarLayout(sidebarPanel(selectInput("cuisine", "選擇國家",choices=cuisine),
                                                                        hr()),
                                                                        mainPanel( plotOutput("cbarplot"))))))
                                        #tabPanel("文字雲",h1(fluidPage(titlePanel("Word Cloud"),
@@ -43,53 +44,50 @@ server <- function(input, output) {
   library(glmnet)
   library(igraph)
   library(ggraph)
-  library(knitr)
-  
-  rm(list=ls())
-  
+  library(knitr) 
   fillColor = "#FFA07A"
   fillColor2 = "#F1C40F"
   fillColorBlue = "#AED6F1"
-  
   train <- fromJSON("../data/train.json", flatten = TRUE)
   test <- fromJSON("../data/test.json", flatten = TRUE)
   train2<-train
-  
+#prepare ingredients  
 ingredientscombine <- function(s)
   {
     a <- unlist(s)
     return(paste0(a, collapse = '',sep=' '))
   }
-train$ingredients <- sapply(train$ingredients,ingredientscombine)
-train <- train %>%
-         rename(text = ingredients)
-test$ingredients <- sapply(test$ingredients,ingredientscombine)
-test <- test %>%
-        rename(text = ingredients)
-
-most_common_words <- train %>%
-                     unnest_tokens(word, text) %>%
-                     filter(!word %in% stop_words$word) %>%
-                     count(word,sort = TRUE) %>%
-                     ungroup() %>%
-                     mutate(word = factor(word, levels = rev(unique(word)))) %>%
-                     head(20)
-most_common_ingredients <- train%>% 
-                           mutate(ingredients = str_split(ingredients, pattern = ",")) %>% 
-                           unnest(ingredients) %>% 
-                           mutate(ingredients = gsub(ingredients, pattern = 'c\\(', replacement = "")) %>%
-                           mutate(ingredients = gsub(ingredients, pattern = '"', replacement = "")) %>%
-                           mutate(ingredients = trimws(ingredients)) %>%
-                           group_by(ingredients) %>%
-                           summarise(Count = n()) %>%
-                           arrange(desc(Count)) %>%
-                           ungroup() %>%
-                           head(10)
+  
+  train$ingredients <- sapply(train$ingredients,ingredientscombine)
+  train <- train %>%
+    rename(text = ingredients)
+  test$ingredients <- sapply(test$ingredients,ingredientscombine)
+  test <- test %>%
+    rename(text = ingredients)
 #barplot
-barplotcuisine= function(train,cuisineName,titleName,fillColorName)
+most_common_words <- train %>%
+    unnest_tokens(word, text) %>%
+    filter(!word %in% stop_words$word) %>%
+    count(word,sort = TRUE) %>%
+    ungroup() %>%
+    mutate(word = factor(word, levels = rev(unique(word)))) %>%
+    head(20)
+  
+most_common_ingredients <- train2 %>% 
+    mutate(ingredients = str_split(ingredients, pattern = ",")) %>% 
+    unnest(ingredients) %>% 
+    mutate(ingredients = gsub(ingredients, pattern = 'c\\(', replacement = "")) %>%
+    mutate(ingredients = gsub(ingredients, pattern = '"', replacement = "")) %>%
+    mutate(ingredients = trimws(ingredients)) %>%
+    group_by(ingredients) %>%
+    summarise(Count = n()) %>%
+    arrange(desc(Count)) %>%
+    ungroup() %>%
+    head(10)
+bcuisine= function(train,cuisine)
 {
   train %>% 
-  filter(cuisine == cuisineName) %>%
+  filter(cuisine == input$cuisine) %>%
   mutate(ingredients = str_split(ingredients, pattern = ",")) %>% 
   unnest(ingredients) %>% 
   mutate(ingredients = gsub(ingredients, pattern = 'c\\(', replacement = "")) %>%
@@ -101,13 +99,23 @@ barplotcuisine= function(train,cuisineName,titleName,fillColorName)
   arrange(desc(Count)) %>%
   ungroup() %>%
   mutate(ingredients = reorder(ingredients,Count)) %>%
-  head(10) %>%
+  head(10)%>%
   ggplot(aes(x = ingredients,y = Count)) +
-  geom_bar(stat='identity',fill= fillColor2) +
-  geom_text(aes(x = ingredients, y = .01, label = paste0("( ",Count," )",sep="")),hjust=0, vjust=.5, size = 4, colour = 'black',fontface = 'bold') +
-  labs(x = 'ingredients', y = 'Count', title = titleName) +
-  coord_flip() 
-output$cbarplot <- barplotcuisine
+    geom_bar(stat='identity',fill= fillColor2) +
+    geom_text(aes(x = ingredients, y = .01, label = paste0("( ",Count," )",sep="")),
+              hjust=0, vjust=.5, size = 4, colour = 'black',
+              fontface = 'bold') +
+    labs(x = 'ingredients', 
+         y = 'Count', 
+         main=input$cuisine) +
+    coord_flip() +
+    theme_bw()
+}
+output$cbarplot <- renderPlot(bcuisine(train2,input$cuisine))
+
+
+
+
 #wordcloud
 #wordcloudcuisine= function(train,cuisine)
   #{  train %>%
@@ -121,7 +129,7 @@ output$cbarplot <- barplotcuisine
   #with(wordcloud(word, n, max.words = 30,colors=brewer.pal(8, "Dark2")))
   
 }
-}
+
 # Run the application 
 shinyApp(ui = ui, server = server)
 

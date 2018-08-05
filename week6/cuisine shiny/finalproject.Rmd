@@ -13,13 +13,10 @@ library(scales)
 library(stringr)
 library(wordcloud)
 library(treemap)
-
 library(text2vec)
 library(glmnet)
-
 library(igraph)
 library(ggraph)
-
 library(knitr)
 
 rm(list=ls())

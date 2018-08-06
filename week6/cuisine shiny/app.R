@@ -14,22 +14,40 @@ library(ggplot2)
 library(shinythemes)
 # Define UI for application that draws a histogram
 cuisine<<-list("italian","southern_us","indian","mexican","chinese","french")
-ui <- navbarPage(theme=shinytheme("cosmo"),"Worldwide Cuisine",tabPanel("前言"),
-                 navbarMenu("世界",    tabPanel("world", h1(fluidPage()))),
+ui <- navbarPage(theme=shinytheme("cosmo"),
+                 "Worldwide Cuisine",
+                 tabPanel("前言"),
+                 navbarMenu("世界",
+                            tabPanel("world",
+                                     h1(fluidPage()))),
                  
                  navbarMenu("異國料理",
-                             tabPanel("長條圖",h1(fluidPage(titlePanel("Barplot"),
-                             sidebarLayout(sidebarPanel(selectInput("cuisine", "選擇國家",choices=cuisine),
-                             hr()),
-                             mainPanel( plotOutput("cbarplot")))))),
-                                       
-                             tabPanel("文字雲",h1(fluidPage(titlePanel("Word Cloud"),
-                             sidebarLayout(sidebarPanel(selectInput("cuisineName", "選擇國家", choices = cuisine),
-                             hr()),
-                             mainPanel(plotOutput("wordcloudcuisine")))))))
-                                                                    
-
-                 )
+                             tabPanel("長條圖",
+                                      h1(fluidPage(titlePanel("Barplot"),
+                                                   sidebarLayout(sidebarPanel(selectInput("cuisine", 
+                                                                                          "選擇國家",
+                                                                                          choices=cuisine),
+                                                                              hr()),
+                                                                 mainPanel( plotOutput("cbarplot")))))),
+                            tabPanel("文字雲",
+                                     h1(fluidPage(titlePanel("Word Cloud"),
+                                                  sidebarLayout(sidebarPanel(selectInput("cuisineName",
+                                                                                         "選擇國家",
+                                                                                         choices = cuisine),
+                                                                             hr()),
+                                                                mainPanel(plotOutput("wordcloudcuisine")))))),
+                             
+                             tabPanel("關係連結圖",
+                                      h1(fluidPage(titlePanel("Treemap"),
+                                                      sidebarLayout(sidebarPanel(selectInput("ing",
+                                                                                             "選擇國家",
+                                                                                             choices = cuisine)),
+                                                                    mainPanel(type="tabs",
+                                                                              tabsetPanel(tabPanel("數據",
+                                                                                                   tableOutput("table")),
+                                                                                          tabPanel("連結圖",
+                                                                                                   plotOutput("treemap"))))))))) 
+)
 # Define server logic required to draw a histogram
 server <- function(input, output) {
   library(jsonlite)
@@ -126,8 +144,65 @@ wcuisine= function(train,cuisine)
   with(wordcloud(word, n, max.words = 50,colors=brewer.pal(8, "Dark2")))
 }
 output$wordcloudcuisine<-renderPlot(wcuisine(train,input$cuisineName))
+
+
+#treemap
+##bigram
+count_bigrams <- function(dataset) 
+{
+  dataset %>%
+    unnest_tokens(bigram, text, token = "ngrams", n = 2) %>%
+    separate(bigram, c("word1", "word2"), sep = " ") %>%
+    filter(!word1 %in% stop_words$word,
+           !word2 %in% stop_words$word) %>%
+    count(word1, word2, sort = TRUE)
+}
+visualize_bigrams <- function(bigrams) {
+  set.seed(2016)
+  a <- grid::arrow(type = "closed", length = unit(.15, "inches"))
+  
+  bigrams %>%
+    graph_from_data_frame() %>%
+    ggraph(layout = "fr") +
+    geom_edge_link(aes(edge_alpha = n), show.legend = FALSE, arrow = a) +
+    geom_node_point(color = "lightblue", size = 5) +
+    geom_node_text(aes(label = name), vjust = 1, hjust = 1) +
+    theme_void()
+  
 }
 
+visualize_bigrams_individual <- function(bigrams) {
+  set.seed(2016)
+  a <- grid::arrow(type = "closed", length = unit(.15, "inches"))
+  
+  bigrams %>%
+    graph_from_data_frame() %>%
+    ggraph(layout = "fr") +
+    geom_edge_link(aes(edge_alpha = n), show.legend = FALSE, arrow = a,end_cap = circle(.07, 'inches')) +
+    geom_node_point(color = "lightblue", size = 5) +
+    geom_node_text(aes(label = name), vjust = 1, hjust = 1) +
+    theme_void()
+}
+
+trainWords<-function(train,cuisine)
+{  
+  train %>% 
+  filter(cuisine == input$ing) %>%
+  count_bigrams()
+}
+
+tmap<-function(train,cuisine)
+{
+  train %>% 
+    filter(cuisine == input$ing) %>%
+    count_bigrams()%>%
+    filter(n > 200) %>%
+    visualize_bigrams()
+}  
+    
+output$table <- renderTable(trainWords(train,input$ing))
+output$treemap<-renderPlot(tmap(train,input$ing))
+}
 # Run the application 
 shinyApp(ui = ui, server = server)
 

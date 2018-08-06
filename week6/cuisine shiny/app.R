@@ -13,7 +13,7 @@ library(RColorBrewer)
 library(ggplot2)
 library(shinythemes)
 # Define UI for application that draws a histogram
-cuisine<<-list("italian","southern_us","mexican","chinese","french")
+cuisine<<-list("italian","southern_us","indian","mexican","chinese","french")
 ui <- navbarPage(theme=shinytheme("cosmo"),"Worldwide Cuisine",tabPanel("前言"),
                  navbarMenu("世界",    tabPanel("world", h1(fluidPage()))),
                  

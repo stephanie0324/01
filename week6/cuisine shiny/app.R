@@ -14,7 +14,7 @@ library(ggplot2)
 library(shinythemes)
 # Define UI for application that draws a histogram
 cuisine<<-list("italian","southern_us","indian","mexican","chinese","french")
-ui <- navbarPage(theme=shinytheme("cosmo"),
+ui <- navbarPage(theme=shinytheme("flatly"),
                  "Worldwide Cuisine",
                  navbarMenu("前言",
                             tabPanel("介紹",includeMarkdown("RMDFILE.Rmd")),

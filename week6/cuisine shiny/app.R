@@ -32,15 +32,14 @@ ui <- navbarPage(theme=shinytheme("cosmo"),
                                                                               hr()),
                                                                  mainPanel( plotOutput("cbarplot")))))),
                             tabPanel("文字雲",
-                                     h1(fluidPage(titlePanel("Word Cloud"),
+                                     h1(fluidPage(titlePanel("Wordcloud"),
                                                   sidebarLayout(sidebarPanel(selectInput("cuisineName",
                                                                                          "選擇國家",
                                                                                          choices = cuisine),
                                                                              hr()),
-                                                                mainPanel(plotOutput("wordcloudcuisine")))))),
-                             
-                             tabPanel("關係連結圖",
-                                      h1(fluidPage(titlePanel("Treemap"),
+                                                                mainPanel(plotOutput("plot")))))),
+                            tabPanel("關係連結圖",
+                                     h1(fluidPage(titlePanel("Treemap"),
                                                       sidebarLayout(sidebarPanel(selectInput("ing",
                                                                                              "選擇國家",
                                                                                              choices = cuisine)),
@@ -141,11 +140,11 @@ wcuisine= function(train,cuisine)
       filter(cuisine == input$cuisineName) %>%
       count(word,sort = TRUE) %>%
       ungroup()  %>%
-      head(30)%>% 
-    
-  with(wordcloud(word, n, max.words = 50,colors=brewer.pal(8, "Dark2")))
+      head(30)%>%
+    with(wordcloud(word, n, max.words = 30,colors=brewer.pal(8, "Dark2")))
 }
-output$wordcloudcuisine<-renderPlot(wcuisine(train,input$cuisineName))
+output$plot<-renderPlot(wcuisine(train,input$cuisineName))
+
 
 
 #treemap
@@ -159,7 +158,8 @@ count_bigrams <- function(dataset)
            !word2 %in% stop_words$word) %>%
     count(word1, word2, sort = TRUE)
 }
-visualize_bigrams <- function(bigrams) {
+visualize_bigrams <- function(bigrams) 
+{
   set.seed(2016)
   a <- grid::arrow(type = "closed", length = unit(.15, "inches"))
   
@@ -173,7 +173,8 @@ visualize_bigrams <- function(bigrams) {
   
 }
 
-visualize_bigrams_individual <- function(bigrams) {
+visualize_bigrams_individual <- function(bigrams) 
+{
   set.seed(2016)
   a <- grid::arrow(type = "closed", length = unit(.15, "inches"))
   

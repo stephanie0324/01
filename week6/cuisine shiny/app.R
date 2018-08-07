@@ -16,7 +16,9 @@ library(shinythemes)
 cuisine<<-list("italian","southern_us","indian","mexican","chinese","french")
 ui <- navbarPage(theme=shinytheme("cosmo"),
                  "Worldwide Cuisine",
-                 tabPanel("前言"),
+                 navbarMenu("前言",
+                            tabPanel("介紹",includeMarkdown("RMDFILE.Rmd")),
+                            tabPanel("資料來源",tags$p("資料來自:https://www.kaggle.com/umeshnarayanappa/recipes-tf-idf-and-bigrams/data"))),
                  navbarMenu("世界",
                             tabPanel("world",
                                      h1(fluidPage()))),

@@ -6,9 +6,9 @@
 
   ![](pic1.jpg)
   
-The treemap shows the distribution of the various cuisines.
- 
-We chose the top 6 to analyze the ingredients.
+樹狀圖呈現的是不同料理的關係。
+
+我們選擇分析以下前六大料理的食材。
  
 The 6 types of cuisine are listed below :
 

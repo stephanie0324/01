@@ -32,8 +32,8 @@ fillColor = "#FFA07A"
 fillColor2 = "#F1C40F"
 fillColorBlue = "#AED6F1"
 
-train <- fromJSON("../afternoonpro/train.json", flatten = TRUE)
-test <- fromJSON("../afternoonpro/test.json", flatten = TRUE)
+train <- fromJSON("train.json", flatten = TRUE)
+test <- fromJSON("test.json", flatten = TRUE)
 train2<-train
 
 #prepare ingredient

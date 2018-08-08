@@ -18,8 +18,8 @@ toping<<-list("salt","oil","water","sugar","onion","pepper","butter")
 ui <- navbarPage(theme=shinytheme("flatly"),
                  "Worldwide Cuisine",
                  navbarMenu("前言",
-                            tabPanel("介紹"),
-                            tabPanel("資料來源",uiOutput("tab"))),
+                            tabPanel("介紹",includeMarkdown("RMDFILE.Rmd")),
+                            tabPanel("資料來源",tags$p("資料來自:https://www.kaggle.com/umeshnarayanappa/recipes-tf-idf-and-bigrams/data"))),
                  
                  navbarMenu("排行榜",
                             tabPanel("菜色最多樣",h1(fluidPage(titlePanel("top cuisines"),
@@ -74,12 +74,6 @@ ui <- navbarPage(theme=shinytheme("flatly"),
 )
 # Define server logic required to draw a histogram
 server <- function(input, output) {
-  # 超連結
-  url <- a("https://www.kaggle.com/umeshnarayanappa/recipes-tf-idf-and-bigrams/data", href="https://www.kaggle.com/umeshnarayanappa/recipes-tf-idf-and-bigrams/data")
-  output$tab <- renderUI({
-    tagList("資料來源:", url)
-  })
-  
   library(jsonlite)
   library(tidyverse)
   library(tidytext)
@@ -112,30 +106,26 @@ ingredientscombine <- function(s)
   test <- test %>%
     rename(text = ingredients)
 
-#top cuisines
+  #top cuisines
   cuisine_type = train %>%
     group_by(cuisine) %>%
     summarise(Count = n()) %>%
     arrange(desc(Count)) %>%
     ungroup() %>%
-    mutate(cuisine = reorder(cuisine,Count))
+    mutate(cuisine = reorder(cuisine,Count)) 
   
   tcuisines = function(train,cuisine)
   {
-    
-    train %>%
-      count(cuisine) %>%
-      mutate(cuisine= reorder(cuisine,n)) %>% 
+    cuisine_type %>%
       head(input$topcuisinenumber)%>%
-      ggplot() + geom_bar(aes(cuisine,n, fill = cuisine), stat = 'identity', show.legend = FALSE) + 
+      ggplot() + geom_bar(aes(cuisine,Count, fill = cuisine), stat = 'identity', show.legend = FALSE) + 
       coord_flip()  +
       labs(title = "Top Cuisines in the given Data",
-           y = "Cuisine") +
+           y = "Count") +
       theme_minimal()
     
   } 
   output$tc <- renderPlot(tcuisines(train,input$topcuisinenumber))
-  
 #top ingredients
   createBarPlotCommonWords = function(train,cuisine)
   {
@@ -167,7 +157,7 @@ ingredientscombine <- function(s)
   }
   output$mi <- renderPlot(createBarPlotCommonWords(train,input$topingredients))
   
-#Cuisines with the Most Ingredients
+  #Cuisines with the Most Ingredients
   train_count_by_id <-  train2 %>% 
     mutate(ingredients = str_split(ingredients, pattern = ",")) %>% 
     unnest(ingredients) %>% 
@@ -175,18 +165,17 @@ ingredientscombine <- function(s)
     mutate(ingredients = gsub(ingredients, pattern = '"', replacement = "")) %>%
     mutate(ingredients = trimws(ingredients)) %>%
     group_by(id,cuisine) %>%
-    summarise(CountOfIngredients = n())
+    summarise(CountOfIngredients = n())%>%
+    
+    group_by(cuisine) %>%
+    summarise(MedianCountOfIngredients = median(CountOfIngredients,na.rm=TRUE)) %>%
+    arrange(desc(MedianCountOfIngredients))
   
   mostingredinets = function(train,cuisine)
   {  
-    train_count_by_id %>%
-      group_by(cuisine) %>%
-      summarise(MedianCountOfIngredients = median(CountOfIngredients,na.rm=TRUE)) %>%
-      arrange(desc(MedianCountOfIngredients)) %>%
-      ungroup() %>%
-      mutate(cuisine = reorder(cuisine,MedianCountOfIngredients)) %>%
+    train_count_by_id%>%
       head(input$cuisines)%>%
-      
+      arrange(desc(MedianCountOfIngredients))%>%
       ggplot(aes(x = cuisine,y = MedianCountOfIngredients)) +
       geom_bar(stat='identity',fill= fillColorBlue) +
       geom_text(aes(x = cuisine, y = .01, label = paste0("( ",round(MedianCountOfIngredients,2)," )",sep="")),
@@ -197,6 +186,7 @@ ingredientscombine <- function(s)
            title = 'cuisine and MedianCountOfIngredients') +
       coord_flip() +
       theme_bw()
+    
   } 
   output$cwmi <- renderPlot(mostingredinets(train,input$cuisines))
   

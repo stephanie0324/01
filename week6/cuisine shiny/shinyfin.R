@@ -140,7 +140,7 @@ ingredientscombine <- function(s)
   output$tc <- renderPlot(tcuisines(train,input$topcuisinenumber))
   
 #top ingredients
-  createBarPlotCommonWords = function(train,cuisine)
+  createBarPlotCommonWords = function(train,titlename)
   {
     train %>% 
       mutate(ingredients = str_split(ingredients, pattern = ",")) %>% 
@@ -168,7 +168,7 @@ ingredientscombine <- function(s)
       theme_bw()
     
   }
-  output$mi <- renderPlot(createBarPlotCommonWords(train,input$topingredients))
+  output$mi <- renderPlot(createBarPlotCommonWords(train2,input$topingredients))
   
 #Cuisines with the Most Ingredients
   train_count_by_id <-  train2 %>% 

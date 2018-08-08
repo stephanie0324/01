@@ -18,7 +18,7 @@ toping<<-list("salt","oil","water","sugar","onion","pepper","butter")
 ui <- navbarPage(theme=shinytheme("flatly"),
                  "Worldwide Cuisine",
                  navbarMenu("前言",
-                            tabPanel("介紹"),
+                            tabPanel("介紹",includeMarkdown("RMDFILE.Rmd")),
                             tabPanel("資料來源",uiOutput("tab"))),
                  
                  navbarMenu("排行榜",

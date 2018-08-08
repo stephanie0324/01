@@ -39,10 +39,11 @@ ui <- navbarPage(theme=shinytheme("flatly"),
                                                                             mainPanel( plotOutput("cwmi"))))))),
                  
                  navbarMenu("世界",
-                            tabPanel("食材", h1(fluidPage(titlePanel("TopIngredients"),
+                            tabPanel("食材",
+                                     h1(fluidPage(titlePanel("TopIngredients"),
                                                         sidebarLayout(sidebarPanel(selectInput("Ingredients", 
                                                                                                "選擇食材",
-                                                                                               choices=toping),
+                                                                                               choices = toping),
                                                                                    hr()),
                                                                       mainPanel( plotOutput("topin"))))))),
                  navbarMenu("異國料理",
@@ -110,13 +111,14 @@ ingredientscombine <- function(s)
   test$ingredients <- sapply(test$ingredients,ingredientscombine)
   test <- test %>%
     rename(text = ingredients)
+
 #top cuisines
   cuisine_type = train %>%
     group_by(cuisine) %>%
     summarise(Count = n()) %>%
     arrange(desc(Count)) %>%
     ungroup() %>%
-    mutate(cuisine = reorder(cuisine,Count)) 
+    mutate(cuisine = reorder(cuisine,Count))
   
   tcuisines = function(train,cuisine)
   {
@@ -199,8 +201,9 @@ ingredientscombine <- function(s)
   output$cwmi <- renderPlot(mostingredinets(train,input$cuisines))
   
 #Topingredients
-  ##bigram
-  count_bigrams <- function(dataset) 
+
+##bigram
+count_bigrams <- function(dataset) 
   {
     dataset %>%
       unnest_tokens(bigram, text, token = "ngrams", n = 2) %>%
@@ -209,7 +212,8 @@ ingredientscombine <- function(s)
              !word2 %in% stop_words$word) %>%
       count(word1, word2, sort = TRUE)
   }
-  visualize_bigrams <- function(bigrams) {
+visualize_bigrams <- function(bigrams) 
+  {
     set.seed(2016)
     a <- grid::arrow(type = "closed", length = unit(.15, "inches"))
     
@@ -223,7 +227,7 @@ ingredientscombine <- function(s)
     
   }
   
-  visualize_bigrams_individual <- function(bigrams) {
+visualize_bigrams_individual <- function(bigrams) {
     set.seed(2016)
     a <- grid::arrow(type = "closed", length = unit(.15, "inches"))
     
@@ -236,72 +240,19 @@ ingredientscombine <- function(s)
       theme_void()
   }
   
-  
-  trainWords<-function(train,ingredients)
-  {  
-    train %>% 
-      count_bigrams()%>%
-      filter( word1 == input$Ingredients| word2 == input$Ingredients) %>%
-      filter( n >= 20) %>%
-      visualize_bigrams()
-  }
-  
-  output$topin<-renderPlot(trainWords(train,input$Ingredients))
-  
-  
-#Topingredients
-  ##bigram
-  count_bigrams <- function(dataset) 
-  {
-    dataset %>%
-      unnest_tokens(bigram, text, token = "ngrams", n = 2) %>%
-      separate(bigram, c("word1", "word2"), sep = " ") %>%
-      filter(!word1 %in% stop_words$word,
-             !word2 %in% stop_words$word) %>%
-      count(word1, word2, sort = TRUE)
-  }
-  visualize_bigrams <- function(bigrams) {
-    set.seed(2016)
-    a <- grid::arrow(type = "closed", length = unit(.15, "inches"))
-    
-    bigrams %>%
-      graph_from_data_frame() %>%
-      ggraph(layout = "fr") +
-      geom_edge_link(aes(edge_alpha = n), show.legend = FALSE, arrow = a) +
-      geom_node_point(color = "lightblue", size = 5) +
-      geom_node_text(aes(label = name), vjust = 1, hjust = 1) +
-      theme_void()
-    
-  }
-  
-  visualize_bigrams_individual <- function(bigrams) {
-    set.seed(2016)
-    a <- grid::arrow(type = "closed", length = unit(.15, "inches"))
-    
-    bigrams %>%
-      graph_from_data_frame() %>%
-      ggraph(layout = "fr") +
-      geom_edge_link(aes(edge_alpha = n), show.legend = FALSE, arrow = a,end_cap = circle(.07, 'inches')) +
-      geom_node_point(color = "lightblue", size = 5) +
-      geom_node_text(aes(label = name), vjust = 1, hjust = 1) +
-      theme_void()
-  }
-  
-  
-  trainWords<-function(train,cuisine)
-  {  
-    train %>% 
-      count_bigrams()%>%
-      filter( word1 == input$Ingredients| word2 == input$Ingredients) %>%
-      filter( n >= 20) %>%
-      visualize_bigrams()
-  }
-  
-  output$topin<-renderPlot(tranWords(train,input$Ingredients))
+ttw<-function(train,word1)
+{
+  train %>% 
+    count_bigrams()%>%
+    filter( word1 == input$Ingredients) %>%
+    filter( n >= 20) %>%
+    visualize_bigrams() 
+}
+output$topin<-renderPlot(ttw(train,input$Ingredients))
   
   
   
-  #barplot
+#barplot
 most_common_words <- train %>%
     unnest_tokens(word, text) %>%
     filter(!word %in% stop_words$word) %>%

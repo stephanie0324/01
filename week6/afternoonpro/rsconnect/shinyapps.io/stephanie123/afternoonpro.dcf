@@ -5,8 +5,8 @@ account: stephanie123
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 396953
-bundleId: 1524173
+bundleId: 1524234
 url: https://stephanie123.shinyapps.io/afternoonpro/
-when: 1533705444.69907
+when: 1533708918.92672
 asMultiple: FALSE
 asStatic: FALSE

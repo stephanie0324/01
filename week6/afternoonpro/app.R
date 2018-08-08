@@ -55,9 +55,10 @@ cuisine<<-list("italian","southern_us","indian","mexican","chinese","french")
 toping<<-list("salt","oil","water","sugar","onion","pepper","butter")
 ui <- navbarPage(theme=shinytheme("flatly"),
                  "Worldwide Cuisine",
-                 #navbarMenu("前言",
-                            #tabPanel("介紹",includeMarkdown("RMDFILE.Rmd")),
-                            #tabPanel("資料來源",tags$p("資料來自:https://www.kaggle.com/umeshnarayanappa/recipes-tf-idf-and-bigrams/data"))),
+                 
+                 navbarMenu("前言",
+                            tabPanel("介紹",includeMarkdown("RMDFILE.Rmd")),
+                            tabPanel("資料來源",tags$p("資料來自:https://www.kaggle.com/umeshnarayanappa/recipes-tf-idf-and-bigrams/data"))),
                  
                  navbarMenu("排行榜",
                             tabPanel("菜色最多樣",h1(fluidPage(titlePanel("top cuisines"),
@@ -67,7 +68,7 @@ ui <- navbarPage(theme=shinytheme("flatly"),
                                                                         mainPanel( plotOutput("tc")))))),
                             tabPanel("最常見的食材",h1(fluidPage(titlePanel("top ingredients"),
                                                            sidebarLayout(sidebarPanel(sliderInput("topingredients", "排名數量:",
-                                                                                                  min=1, max=20, value=20),
+                                                                                                  min=1, max=10, value=10),
                                                                                       hr()),
                                                                          mainPanel( plotOutput("mi")))))),
                             tabPanel("使用最多種食材的菜",h1(fluidPage(titlePanel("Cuisines with the Most Ingredients"),
@@ -123,7 +124,10 @@ server <- function(input, output) {
   library(glmnet)
   library(igraph)
   library(ggraph)
-  library(knitr) 
+  library(knitr)
+  library(rsconnect)
+  library(clipr)
+  rsconnect::setAccountInfo(name='stephanie123', token='3EA9DA47B1285AFD8E7BF8F906356069', secret='7o1Lqt5DURYiBP3F8v+H1ahmbPZzvSPS43Aegg+E')
   fillColor = "#FFA07A"
   fillColor2 = "#F1C40F"
   fillColorBlue = "#AED6F1"

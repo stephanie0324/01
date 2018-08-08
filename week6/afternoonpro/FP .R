@@ -28,28 +28,6 @@ library(rsconnect)
 
 rm(list=ls())
 
-fillColor = "#FFA07A"
-fillColor2 = "#F1C40F"
-fillColorBlue = "#AED6F1"
-
-train <- fromJSON("train.json", flatten = TRUE)
-test <- fromJSON("test.json", flatten = TRUE)
-train2<-train
-
-#prepare ingredient
-ingredientscombine <- function(s)
-{
-  a <- unlist(s)
-  return(paste0(a, collapse = '',sep=' '))
-}
-
-train$ingredients <- sapply(train$ingredients,ingredientscombine)
-train <- train %>%
-  rename(text = ingredients)
-test$ingredients <- sapply(test$ingredients,ingredientscombine)
-test <- test %>%
-  rename(text = ingredients)
-
 # Define UI for application that draws a histogram
 cuisine<<-list("italian","southern_us","indian","mexican","chinese","french")
 toping<<-list("salt","oil","water","sugar","onion","pepper","butter")

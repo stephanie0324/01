@@ -34,9 +34,9 @@ toping<<-list("salt","oil","water","sugar","onion","pepper","butter")
 ui <- navbarPage(theme=shinytheme("flatly"),
                  "Worldwide Cuisine",
                  
-                 navbarMenu("前言",
-                            tabPanel("介紹",includeMarkdown("RMDFILE.Rmd")),
-                            tabPanel("資料來源",tags$p("資料來自:https://www.kaggle.com/umeshnarayanappa/recipes-tf-idf-and-bigrams/data"))),
+                 #navbarMenu("前言",
+                            #tabPanel("介紹",includeMarkdown("RMDFILE.Rmd")),
+                            #tabPanel("資料來源",tags$p("資料來自:https://www.kaggle.com/umeshnarayanappa/recipes-tf-idf-and-bigrams/data"))),
                  
                  navbarMenu("排行榜",
                             tabPanel("菜色最多樣",h1(fluidPage(titlePanel("top cuisines"),
